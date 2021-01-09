@@ -254,6 +254,8 @@ type pagerdutyConfig struct {
 type kubelessConfig struct {
 	Namespace       string
 	Function        string
+	Port            int
+	Kubeconfig      string
 	MinimumPriority string
 }
 

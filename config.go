@@ -132,6 +132,11 @@ func getConfig() *types.Configuration {
 	v.SetDefault("Pagerduty.Assignee", []string{})
 	v.SetDefault("Pagerduty.EscalationPolicy", "")
 	v.SetDefault("Pagerduty.MinimumPriority", "")
+	v.SetDefault("Kubeless.Namespace", "")
+	v.SetDefault("Kubeless.Function", "")
+	v.SetDefault("Kubeless.Port", 8080)
+	v.SetDefault("Kubeless.Kubeconfig", "")
+	v.SetDefault("Kubeless.MinimumPriority", "")
 
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()

@@ -2,7 +2,9 @@ package outputs
 
 import (
 	"bytes"
+	"crypto/rand"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,6 +19,7 @@ import (
 	"github.com/PagerDuty/go-pagerduty"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/segmentio/kafka-go"
+	"k8s.io/client-go/kubernetes"
 
 	"github.com/falcosecurity/falcosidekick/types"
 )
@@ -44,17 +47,18 @@ var ErrClientCreation = errors.New("Client creation Error")
 
 // Client communicates with the different API.
 type Client struct {
-	OutputType      string
-	EndpointURL     *url.URL
-	Config          *types.Configuration
-	Stats           *types.Statistics
-	PromStats       *types.PromStatistics
-	AWSSession      *session.Session
-	StatsdClient    *statsd.Client
-	DogstatsdClient *statsd.Client
-	GCPTopicClient  *pubsub.Topic
-	KafkaProducer   *kafka.Conn
-	PagerdutyClient *pagerduty.Client
+	OutputType       string
+	EndpointURL      *url.URL
+	Config           *types.Configuration
+	Stats            *types.Statistics
+	PromStats        *types.PromStatistics
+	AWSSession       *session.Session
+	StatsdClient     *statsd.Client
+	DogstatsdClient  *statsd.Client
+	GCPTopicClient   *pubsub.Topic
+	KafkaProducer    *kafka.Conn
+	PagerdutyClient  *pagerduty.Client
+	KubernetesClient *kubernetes.Clientset
 }
 
 // NewClient returns a new output.Client for accessing the different API.
@@ -121,6 +125,15 @@ func (c *Client) Post(payload interface{}) error {
 
 	if c.OutputType == "Opsgenie" {
 		req.Header.Add("Authorization", "GenieKey "+c.Config.Opsgenie.APIKey)
+	}
+
+	if c.OutputType == "Kubeless" {
+		b := make([]byte, 11)
+		rand.Read(b)
+		base64.RawURLEncoding.EncodeToString(b)
+		req.Header.Add("event-id", base64.RawURLEncoding.EncodeToString(b))
+		req.Header.Add("event-type", "falco")
+		req.Header.Add("event-namespace", c.Config.Kubeless.Namespace)
 	}
 
 	req.Header.Add("User-Agent", "Falcosidekick")

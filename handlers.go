@@ -229,4 +229,8 @@ func forwardEvent(falcopayload types.FalcoPayload) {
 	if config.Pagerduty.APIKey != "" && config.Pagerduty.Service != "" && (priorityMap[strings.ToLower(falcopayload.Priority)] >= priorityMap[strings.ToLower(config.Pagerduty.MinimumPriority)] || falcopayload.Rule == TestRule) {
 		go pagerdutyClient.PagerdutyCreateIncident(falcopayload)
 	}
+
+	if config.Kubeless.Namespace != "" && config.Kubeless.Function != "" && (priorityMap[strings.ToLower(falcopayload.Priority)] >= priorityMap[strings.ToLower(config.Kubeless.MinimumPriority)] || falcopayload.Rule == TestRule) {
+		go kubelessClient.KubelessCall(falcopayload)
+	}
 }
