@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -157,6 +158,11 @@ func (c *Client) Post(payload interface{}) error {
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusCreated, http.StatusAccepted, http.StatusNoContent: //200, 201, 202, 204
 		log.Printf("[INFO]  : %v - Post OK (%v)\n", c.OutputType, resp.StatusCode)
+		if c.OutputType == "Kubeless" {
+			body, _ := ioutil.ReadAll(resp.Body)
+			log.Printf("[INFO]  : Kubeless - Function Reponse : %v\n", string(body))
+
+		}
 		return nil
 	case http.StatusBadRequest: //400
 		log.Printf("[ERROR] : %v - %v (%v)\n", c.OutputType, ErrHeaderMissing, resp.StatusCode)
