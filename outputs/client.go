@@ -119,7 +119,7 @@ func (c *Client) Post(payload interface{}) error {
 		log.Printf("[ERROR] : %v - %v\n", c.OutputType, err.Error())
 	}
 	contentType := "application/json; charset=utf-8"
-	if c.OutputType == "Loki" {
+	if c.OutputType == "Loki" || c.OutputType == "Kubeless" {
 		contentType = "application/json"
 	}
 	req.Header.Add("Content-Type", contentType)
@@ -161,7 +161,6 @@ func (c *Client) Post(payload interface{}) error {
 		if c.OutputType == "Kubeless" {
 			body, _ := ioutil.ReadAll(resp.Body)
 			log.Printf("[INFO]  : Kubeless - Function Reponse : %v\n", string(body))
-
 		}
 		return nil
 	case http.StatusBadRequest: //400
