@@ -71,7 +71,7 @@ func (c *Client) KubelessCall(falcopayload types.FalcoPayload) {
 			log.Printf("[ERROR] : Kubeless - %v\n", err)
 			return
 		}
-		log.Printf("[INFO]  : Kubeless - Function Reponse : %v\n", string(string(rawbody)))
+		log.Printf("[INFO]  : Kubeless - Function Response : %v\n", string(rawbody))
 	} else {
 		err := c.Post(falcopayload)
 		if err != nil {

@@ -119,7 +119,7 @@ func (c *Client) Post(payload interface{}) error {
 		log.Printf("[ERROR] : %v - %v\n", c.OutputType, err.Error())
 	}
 	contentType := "application/json; charset=utf-8"
-	if c.OutputType == "Loki" || c.OutputType == "Kubeless" {
+	if c.OutputType == "Loki" || c.OutputType == Kubeless {
 		contentType = "application/json"
 	}
 	req.Header.Add("Content-Type", contentType)
@@ -128,7 +128,7 @@ func (c *Client) Post(payload interface{}) error {
 		req.Header.Add("Authorization", "GenieKey "+c.Config.Opsgenie.APIKey)
 	}
 
-	if c.OutputType == "Kubeless" {
+	if c.OutputType == Kubeless {
 		b := make([]byte, 11)
 		rand.Read(b)
 		base64.RawURLEncoding.EncodeToString(b)
@@ -158,9 +158,9 @@ func (c *Client) Post(payload interface{}) error {
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusCreated, http.StatusAccepted, http.StatusNoContent: //200, 201, 202, 204
 		log.Printf("[INFO]  : %v - Post OK (%v)\n", c.OutputType, resp.StatusCode)
-		if c.OutputType == "Kubeless" {
+		if c.OutputType == Kubeless {
 			body, _ := ioutil.ReadAll(resp.Body)
-			log.Printf("[INFO]  : Kubeless - Function Reponse : %v\n", string(body))
+			log.Printf("[INFO]  : Kubeless - Function Response : %v\n", string(body))
 		}
 		return nil
 	case http.StatusBadRequest: //400
